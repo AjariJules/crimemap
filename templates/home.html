@@ -1,21 +1,83 @@
+<!DOCTYPE html>
 <html>
-<body>
 <head>
-    <title>
-        Crime Map
-    </title>
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key={{api}}&callback=initialize">
+    </script>
+    <link type="text/css" rel="stylesheet" href="{{url_for('static',
+filename='css/style.css') }}"/>
 </head>
-<h1>Crime Map</h1>
-<form action="/add" METHOD="post">
-    <input type="text" name="userinput">
-    <input type="submit" value="Submit">
+<body>
+<h3>Crime App</h3>
+<p>A map of recent criminal activity in the Area</p>
+<div id="map_canvas"></div>
 
-</form>
-
-<a href="/clear">clear</a>
-{% for userinput in data %}
-<p>{{userinput}}</p>
-{% endfor %}
-
+<div id="newcrimeform">
+    <h2>Submit a crime</h2>
+    <form action="/submitcrime" method="POST">
+        <label for="category">Category</label>
+        <select name="category" id="category">
+            <option value="mugging">Mugging</option>
+            <option value="breakin">Break-in</option>
+        </select>
+        <label for="date">Date</label>
+        <input name="date" id="date" type="date">
+        <label for="latitude">Latitude</label>
+        <input name="latitude" id="latitude" type="text">
+        <label for="longitude">Longitude</label>
+        <input name="longitude" id="longitude" type="text">
+        <label for="description">Description</label>
+        <textarea name="description" id="description" placeholder="A brief but detailed
+description of the crime"></textarea>
+        <input type="submit" value="Submit">
+    </form>
+</div>
 </body>
+
+<script>
+
+    var map;
+    var marker;
+
+    function initialize() {
+
+        var myLatlng = new google.maps.LatLng(40.713956, -74.006653);
+
+        var myOptions = {
+            zoom: 8,
+            center: myLatlng,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+
+        marker = new google.maps.Marker({
+            draggable: true,
+            position: myLatlng,
+            map: map,
+            title: "Your location"
+        });
+
+
+        google.maps.event.addListener(map, 'click', function (event) {
+
+            placeMarker(event.latLng);
+        });
+    }
+
+    function placeMarker(location) {
+        if (marker) {
+            marker.setPosition(location);
+        } else {
+            marker = new google.maps.Marker({
+                position: location,
+                map: map
+            });
+        }
+        document.getElementById('latitude').value = location.lat();
+        document.getElementById('longitude').value = location.lng();
+    }
+    google.maps.event.addDomListener(window, "load", initialize());
+
+</script>
+
 </html>

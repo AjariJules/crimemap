@@ -10,6 +10,16 @@ class DBHelper:
                                passwd=dbconfig.db_password,
                                db=database)
 
+    def getApi(self):
+        connection = self.connect()
+        try:
+            query = "SELECT api FROM api;"
+            with connection.cursor() as cursor:
+                cursor.execute(query)
+            return  cursor.fetchone()[0]
+        finally:
+            connection.close()
+
     def get_all_inputs(self):
         connection = self.connect()
         try:
@@ -24,9 +34,9 @@ class DBHelper:
     def add_input(self, data):
         connection = self.connect()
         try:
-            query = "INSERT INTO crimes (description) VALUES ('{}');".format(data)
+            query = "INSERT INTO crimes (description) VALUES (%s);"
             with connection.cursor() as cursor:
-                cursor.execute(query)
+                cursor.execute(query,data)
                 connection.commit()
         finally:
             connection.close()
@@ -35,7 +45,7 @@ class DBHelper:
         connection = self.connect()
         try:
             query = "DELETE FROM crimes;"
-            with connection.cursor() as cursor
+            with connection.cursor() as cursor:
                 cursor.execute(query)
                 connection.commit()
         finally:
