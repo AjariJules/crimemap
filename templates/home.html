@@ -14,19 +14,22 @@ filename='css/style.css') }}"/>
 
 <div id="newcrimeform">
     <h2>Submit a crime</h2>
+    {% if error_message %}
+        <div id="error"><p>{{error_message}}</p></div>
+    {% endif %}
     <form action="/submitcrime" method="POST">
         <label for="category">Category</label>
         <select name="category" id="category">
-            <option value="mugging">Mugging</option>
-            <option value="breakin">Break-in</option>
-            <option value="Assault">Assault</option>
+            {% for category in categories %}
+            <option value="{{category}}">{{category}}</option>
+            {% endfor %}
         </select>
         <label for="date">Date</label>
         <input name="date" id="date" type="date">
         <label for="latitude">Latitude</label>
-        <input name="latitude" id="latitude" type="text">
+        <input name="latitude" id="latitude" type="text" readonly>
         <label for="longitude">Longitude</label>
-        <input name="longitude" id="longitude" type="text">
+        <input name="longitude" id="longitude" type="text" readonly>
         <label for="description">Description</label>
         <textarea name="description" id="description" placeholder="A brief but detailed
 description of the crime"></textarea>
@@ -46,7 +49,7 @@ description of the crime"></textarea>
         var myLatlng = new google.maps.LatLng(10.657014851246759, -61.4740526676178);
 
         var myOptions = {
-            zoom: 8,
+            zoom: 15,
             center: myLatlng,
             mapTypeId: google.maps.MapTypeId.ROADMAP
         };
